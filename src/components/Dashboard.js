@@ -11,7 +11,8 @@ export default function Dashboard() {
   const [isOnline, toggleOnline] = React.useState(true)
   const [volume, adjustVolume] = React.useState(20)
   const [quality, adjustQuality] = React.useState('normal')
-  const [notifications, notificationUpdater] = React.useState(['hey', '2', '3'])
+  // const [notifications, notificationUpdater] = React.useState([])
+  let notifications = []
 
   // notificationUpdater(
   //   (!isOnline
@@ -24,27 +25,24 @@ export default function Dashboard() {
 
   let notification = React.useRef('Welcome!')
 
-  const func = () => {
+  React.useEffect(() => {
     if (!isOnline) {
-      notificationUpdater([
+      notifications.push([
         ...notifications,
         `Your application is offline. You won't be able to share or stream music to other devices`,
       ])
     } else if (volume > 80) {
-      notificationUpdater([
+      notifications.push([
         ...notifications,
         `Listening to music at a high volume could cause long-term hearing loss.`,
       ])
     } else if (quality === 'low') {
-      notificationUpdater([
+      notifications.push([
         ...notifications,
         `Music quality is degraded. Increase quality if your connection allows it.`,
       ])
-      return notifications
     }
-  }
-
-  React.useEffect(notificationUpdater(func))
+  }, [isOnline, volume, quality, notifications])
 
   return (
     <Box width="50%" textAlign="center">
@@ -102,11 +100,7 @@ export default function Dashboard() {
           }
         </Typography>
       </Box>
-      <Box>
-        {notifications.map((x) => (
-          <p>{x}</p>
-        ))}
-      </Box>
+      <Box>{notifications}</Box>
     </Box>
   )
 }
