@@ -11,7 +11,18 @@ export default function Dashboard() {
   const [isOnline, toggleOnline] = React.useState(false)
   const [volume, adjustVolume] = React.useState(20)
   const [quality, adjustQuality] = React.useState('normal')
-  const [notifications, x] = React.useState([])
+  // const [notification, x] = React.useState([])
+
+  let notification = React.useRef('')
+  // React.useEffect(() => {
+  //   notification = 'test'
+  // })
+
+  React.useEffect(() => {
+    notification.current = isOnline
+      ? `Your application is offline. You won't be able to share or stream music to other devices`
+      : `hey`
+  })
 
   return (
     <Box width="50%" textAlign="center">
@@ -45,13 +56,16 @@ export default function Dashboard() {
           <Select
             labelId="Sound Quality"
             id="select"
-            onChange={(e, v) => adjustQuality(e.target.value)}
+            onChange={(e) => adjustQuality(e.target.value)}
           >
             <MenuItem value="Low">Low</MenuItem>
             <MenuItem value="Normal">Normal</MenuItem>
             <MenuItem value="High">High</MenuItem>
           </Select>
         </Card>
+      </Box>
+      <Box>
+        <Typography>{notification.current}</Typography>
       </Box>
     </Box>
   )
