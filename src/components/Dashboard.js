@@ -11,31 +11,40 @@ export default function Dashboard() {
   const [isOnline, toggleOnline] = React.useState(true)
   const [volume, adjustVolume] = React.useState(20)
   const [quality, adjustQuality] = React.useState('normal')
-  // const [notifications, notificationUpdater] = React.useState([
-  //   {
-  //     offline: `Your application is offline. You won't be able to share or stream music to other devices`,
-  //   },
-  //   {
-  //     volumeWarn: `Listening to music at a high volume could cause long-term hearing loss.`,
-  //   },
-  //   {
-  //     qualityWarn: `Music quality is degraded. Increase quality if your connection allows it.`,
-  //   },
-  // ])
+  const [notifications, notificationUpdater] = React.useState(['hey', '2', '3'])
+
+  // notificationUpdater(
+  //   (!isOnline
+  //     ? notifications.push(`Your application is offline. You won't be able to share or stream music to other devices`)
+  //     : (volume > 80)
+  //     ? notifications.push(`Listening to music at a high volume could cause long-term hearing loss.`)
+  //     : (quality === 'low')
+  //     ? notifications.push(`Music quality is degraded. Increase quality if your connection allows it.`))
+  // )
 
   let notification = React.useRef('Welcome!')
 
-  // const notificationUpdater = () => {
-  //   notification.current = !isOnline
-  //     ? `Your application is offline. You won't be able to share or stream music to other devices`
-  //     : volume > 80
-  //     ? `Listening to music at a high volume could cause long-term hearing loss.`
-  //     : quality === 'low'
-  //     ? `Music quality is degraded. Increase quality if your connection allows it.`
-  //     : `Welcome!`
-  // }
+  const func = () => {
+    if (!isOnline) {
+      notificationUpdater([
+        ...notifications,
+        `Your application is offline. You won't be able to share or stream music to other devices`,
+      ])
+    } else if (volume > 80) {
+      notificationUpdater([
+        ...notifications,
+        `Listening to music at a high volume could cause long-term hearing loss.`,
+      ])
+    } else if (quality === 'low') {
+      notificationUpdater([
+        ...notifications,
+        `Music quality is degraded. Increase quality if your connection allows it.`,
+      ])
+      return notifications
+    }
+  }
 
-  // React.useEffect(() => notificationUpdater())
+  React.useEffect(notificationUpdater(func))
 
   return (
     <Box width="50%" textAlign="center">
@@ -92,6 +101,11 @@ export default function Dashboard() {
               : `Welcome!`)
           }
         </Typography>
+      </Box>
+      <Box>
+        {notifications.map((x) => (
+          <p>{x}</p>
+        ))}
       </Box>
     </Box>
   )
