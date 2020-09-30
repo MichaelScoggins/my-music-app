@@ -8,21 +8,34 @@ import Select from '@material-ui/core/select'
 import { MenuItem } from '@material-ui/core'
 
 export default function Dashboard() {
-  const [isOnline, toggleOnline] = React.useState(false)
+  const [isOnline, toggleOnline] = React.useState(true)
   const [volume, adjustVolume] = React.useState(20)
   const [quality, adjustQuality] = React.useState('normal')
-  // const [notification, x] = React.useState([])
+  // const [notifications, notificationUpdater] = React.useState([
+  //   {
+  //     offline: `Your application is offline. You won't be able to share or stream music to other devices`,
+  //   },
+  //   {
+  //     volumeWarn: `Listening to music at a high volume could cause long-term hearing loss.`,
+  //   },
+  //   {
+  //     qualityWarn: `Music quality is degraded. Increase quality if your connection allows it.`,
+  //   },
+  // ])
 
-  let notification = React.useRef('')
-  // React.useEffect(() => {
-  //   notification = 'test'
-  // })
+  let notification = React.useRef('Welcome!')
 
-  React.useEffect(() => {
-    notification.current = isOnline
-      ? `Your application is offline. You won't be able to share or stream music to other devices`
-      : `hey`
-  })
+  // const notificationUpdater = () => {
+  //   notification.current = !isOnline
+  //     ? `Your application is offline. You won't be able to share or stream music to other devices`
+  //     : volume > 80
+  //     ? `Listening to music at a high volume could cause long-term hearing loss.`
+  //     : quality === 'low'
+  //     ? `Music quality is degraded. Increase quality if your connection allows it.`
+  //     : `Welcome!`
+  // }
+
+  // React.useEffect(() => notificationUpdater())
 
   return (
     <Box width="50%" textAlign="center">
@@ -38,7 +51,10 @@ export default function Dashboard() {
         )}
       </Box>
       <Box>
-        <Switch onChange={() => toggleOnline(!isOnline)} />
+        <Switch
+          defaultChecked="true"
+          onChange={() => toggleOnline(!isOnline)}
+        />
       </Box>
       <br />
       <Box>
@@ -58,14 +74,24 @@ export default function Dashboard() {
             id="select"
             onChange={(e) => adjustQuality(e.target.value)}
           >
-            <MenuItem value="Low">Low</MenuItem>
-            <MenuItem value="Normal">Normal</MenuItem>
-            <MenuItem value="High">High</MenuItem>
+            <MenuItem value="low">Low</MenuItem>
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="high">High</MenuItem>
           </Select>
         </Card>
       </Box>
       <Box>
-        <Typography>{notification.current}</Typography>
+        <Typography>
+          {
+            (notification.current = !isOnline
+              ? `Your application is offline. You won't be able to share or stream music to other devices`
+              : volume > 80
+              ? `Listening to music at a high volume could cause long-term hearing loss.`
+              : quality === 'low'
+              ? `Music quality is degraded. Increase quality if your connection allows it.`
+              : `Welcome!`)
+          }
+        </Typography>
       </Box>
     </Box>
   )

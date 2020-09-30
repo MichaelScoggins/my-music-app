@@ -16,7 +16,7 @@ export default class LoginField extends Component {
   }
 
   render() {
-    return !this.state.isLoggedIn ? (
+    return this.state.isLoggedIn ? (
       <Dashboard />
     ) : (
       <div>
