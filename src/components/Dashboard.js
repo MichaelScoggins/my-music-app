@@ -1,106 +1,197 @@
 import React from 'react'
-import Card from '@material-ui/core/card'
-import Switch from '@material-ui/core/switch'
-import Slider from '@material-ui/core/slider'
-import Typography from '@material-ui/core/typography'
-import Box from '@material-ui/core/box'
-import Select from '@material-ui/core/select'
-import { MenuItem } from '@material-ui/core'
+import {
+  makeStyles,
+  Card,
+  CardActions,
+  CardContent,
+  Typography,
+  Switch,
+  Slider,
+  MenuItem,
+  FormControl,
+  Select,
+  Box,
+} from '@material-ui/core'
+import VolumeUpIcon from '@material-ui/icons/VolumeUp'
+import VolumeDownIcon from '@material-ui/icons/VolumeDown'
 
-export default function Dashboard() {
-  const [isOnline, toggleOnline] = React.useState(true)
-  const [volume, adjustVolume] = React.useState(20)
-  const [quality, adjustQuality] = React.useState('normal')
-  // const [notifications, notificationUpdater] = React.useState([])
-  let notifications = []
+const useStyles = makeStyles({
+  root: {
+    width: 275,
+    height: 200,
+    minWidth: 250,
+  },
+  bullet: {
+    display: 'inline-block',
+    margin: '0 2px',
+    transform: 'scale(0.8)',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  pos: {
+    marginBottom: 12,
+  },
+  formControl: {
+    minWidth: 260,
+  },
+  textAlign: {
+    margin: '100px 150px',
+  },
+})
 
-  // notificationUpdater(
-  //   (!isOnline
-  //     ? notifications.push(`Your application is offline. You won't be able to share or stream music to other devices`)
-  //     : (volume > 80)
-  //     ? notifications.push(`Listening to music at a high volume could cause long-term hearing loss.`)
-  //     : (quality === 'low')
-  //     ? notifications.push(`Music quality is degraded. Increase quality if your connection allows it.`))
-  // )
+export default function DashboardComp() {
+  const classes = useStyles()
+  const [volume, setVolume] = React.useState('')
+  const [quality, setQuality] = React.useState('normal')
+  const [notification, setNotification] = React.useState({
+    onlineWarning: '',
+    volumeWarning: '',
+    qualityWarning: '',
+  })
+  const [isOnline, onlineToggle] = React.useState({
+    checkedA: true,
+  })
 
-  let notification = React.useRef('Welcome!')
+  const handleOnlineStatusChange = (event) => {
+    onlineToggle({ ...isOnline, [event.target.name]: event.target.checked })
+    return !event.target.checked
+      ? setNotification({
+          ...notification,
+          onlineWarning:
+            "Your application is offline. You won't be able to share or stream music to other devices.",
+        })
+      : setNotification({ ...notification, onlineWarning: '' })
+  }
 
-  React.useEffect(() => {
-    if (!isOnline) {
-      notifications.push([
-        ...notifications,
-        `Your application is offline. You won't be able to share or stream music to other devices`,
-      ])
-    } else if (volume > 80) {
-      notifications.push([
-        ...notifications,
-        `Listening to music at a high volume could cause long-term hearing loss.`,
-      ])
-    } else if (quality === 'low') {
-      notifications.push([
-        ...notifications,
-        `Music quality is degraded. Increase quality if your connection allows it.`,
-      ])
+  const handleVolChange = (e, v) => {
+    setVolume(v)
+    return v > 80
+      ? setNotification({
+          ...notification,
+          volumeWarning:
+            'Listening to music at a high volume could cause long-term hearing loss.',
+        })
+      : setNotification({ ...notification, volumeWarning: '' })
+  }
+
+  const handleQualityChange = (event) => {
+    setQuality(event.target.value)
+    return event.target.value === 'low'
+      ? setNotification({
+          ...notification,
+          qualityWarning:
+            'Music quality is degraded. Increase quality if your connection allows it.',
+        })
+      : setNotification({ ...notification, qualityWarning: '' })
+  }
+
+  const renderAlertMsg = () => {
+    if (!isOnline.checkedA || volume > 80 || quality === 'low') {
+      return (
+        <h3 style={{ color: 'red' }}>
+          Alert(s): <hr />
+        </h3>
+      )
+    } else {
+      return ''
     }
-  }, [isOnline, volume, quality, notifications])
+  }
 
   return (
-    <Box width="50%" textAlign="center">
-      <Box>
-        {isOnline ? (
-          <Card>
-            <Typography>Online Mode</Typography>
-          </Card>
-        ) : (
-          <Card>
-            <Typography>Offline Mode</Typography>
-          </Card>
-        )}
-      </Box>
-      <Box>
-        <Switch
-          defaultChecked="true"
-          onChange={() => toggleOnline(!isOnline)}
-        />
-      </Box>
-      <br />
-      <Box>
-        <Card>
-          <Typography>
-            {' '}
-            Volume
-            <Slider step={10} onChange={(e, v) => adjustVolume(v)} />
-          </Typography>
+    <div>
+      <Box
+        component="span"
+        m={10}
+        display="flex"
+        flexWrap="wrap"
+        alignItems="center"
+        justifyContent="space-evenly"
+      >
+        <Card className={classes.root}>
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              Online Mode
+            </Typography>
+            <Typography>
+              Is this application connected to the internet?
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Switch
+              checked={isOnline.checkedA}
+              onChange={handleOnlineStatusChange}
+              name="checkedA"
+              inputProps={{ 'aria-label': 'secondary checkbox' }}
+            />
+          </CardActions>
         </Card>
-      </Box>
-      <Box>
-        <Card>
-          <Typography>Sound Quality</Typography>
-          <Select
-            labelId="Sound Quality"
-            id="select"
-            onChange={(e) => adjustQuality(e.target.value)}
-          >
-            <MenuItem value="low">Low</MenuItem>
-            <MenuItem value="normal">Normal</MenuItem>
-            <MenuItem value="high">High</MenuItem>
-          </Select>
+        <Card className={classes.root}>
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              Volume
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <VolumeDownIcon />
+            <Slider
+              Value={volume}
+              aria-labelledby="discrete-slider"
+              valueLabelDisplay="auto"
+              onChange={handleVolChange}
+              step={10}
+              marks
+              min={0}
+              max={100}
+            />
+            <VolumeUpIcon />
+          </CardActions>
         </Card>
-      </Box>
-      <Box>
-        <Typography>
-          {
-            (notification.current = !isOnline
-              ? `Your application is offline. You won't be able to share or stream music to other devices`
-              : volume > 80
-              ? `Listening to music at a high volume could cause long-term hearing loss.`
-              : quality === 'low'
-              ? `Music quality is degraded. Increase quality if your connection allows it.`
-              : `Welcome!`)
-          }
+        <Card className={classes.root}>
+          <CardContent>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              Sound Quality
+            </Typography>
+            <Typography>
+              Manually control the music quality in event of poor connection
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <FormControl className={classes.formControl}>
+              <Select value={quality} onChange={handleQualityChange}>
+                <MenuItem value={'low'}>Low</MenuItem>
+                <MenuItem value={'normal'}>Normal</MenuItem>
+                <MenuItem value={'high'}>High</MenuItem>
+              </Select>
+            </FormControl>
+          </CardActions>
+        </Card>
+        <Typography
+          variant="h5"
+          style={{ marginTop: 0 }}
+          className={classes.textAlign}
+          color="primary"
+        >
+          {renderAlertMsg()}
+          <Typography variant="h6">{notification.volumeWarning}</Typography>
+          <Typography variant="h6">{notification.qualityWarning}</Typography>
+          <Typography variant="h6">{notification.onlineWarning}</Typography>
         </Typography>
       </Box>
-      <Box>{notifications}</Box>
-    </Box>
+    </div>
   )
 }
